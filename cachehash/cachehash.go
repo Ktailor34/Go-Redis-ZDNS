@@ -69,6 +69,10 @@ func (c *CacheHash) Add(k interface{}, v interface{}) bool {
 		var kv keyValue
 		kv.Key = k
 		kv.Value = v
+
+		//REDIS CACHE SET
+		SetCacheValue(k, v)
+
 		e = c.l.PushFront(kv)
 		c.len++
 		c.h[k] = e

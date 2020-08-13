@@ -4,6 +4,8 @@ go 1.13
 
 require (
 	github.com/asergeyev/nradix v0.0.0-20170505151046-3872ab85bb56 // indirect
+	github.com/go-redis/redis/v7 v7.4.0 // indirect
+	github.com/go-redis/redis/v8 v8.0.0-beta.7
 	github.com/hashicorp/go-version v1.2.0
 	github.com/kavu/go_reuseport v1.4.0 // indirect
 	github.com/liip/sheriff v0.0.0-20190308094614-91aa83a45a3d

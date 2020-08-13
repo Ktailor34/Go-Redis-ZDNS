@@ -25,6 +25,7 @@ type ShardedCacheHash struct {
 }
 
 func (c *ShardedCacheHash) Init(maxLen int, shards int) {
+	fmt.Println("INIT ")
 	c.shardsLen = shards
 	shardLen := maxLen / shards
 	c.shards = make([]CacheHash, shards)
@@ -33,45 +34,58 @@ func (c *ShardedCacheHash) Init(maxLen int, shards int) {
 	}
 }
 
+//This function leave as is?
 func (c *ShardedCacheHash) getShardID(k interface{}) int {
+	fmt.Println("GET SHARD ID")
 	kb := []byte(fmt.Sprintf("%v", k))
 	return int(crc32.ChecksumIEEE(kb)) % c.shardsLen
 }
 
+//uses the other cachehashe looks like we need to replace both?
 func (c *ShardedCacheHash) getShard(k interface{}) *CacheHash {
+	fmt.Println("Get Shard ")
 	return &c.shards[c.getShardID(k)]
 }
 
 func (c *ShardedCacheHash) Add(k interface{}, v interface{}) bool {
+	checker := SetCacheValue(k.(string), v.(string))
+	fmt.Println("ADD OPERATION ", checker)
 	return c.getShard(k).Add(k, v)
 }
 
 func (c *ShardedCacheHash) Get(k interface{}) (interface{}, bool) {
+	fmt.Println("GET ")
 	return c.getShard(k).Get(k)
 }
 
 func (c *ShardedCacheHash) GetNoMove(k interface{}) (interface{}, bool) {
+	fmt.Println("GET NO MOVE")
 	return c.getShard(k).GetNoMove(k)
 }
 
 func (c *ShardedCacheHash) Has(k interface{}) bool {
+	fmt.Println("HAS ")
 	return c.getShard(k).Has(k)
 }
 
 func (c *ShardedCacheHash) Delete(k interface{}) (interface{}, bool) {
+	fmt.Println("DELETE ")
 	return c.getShard(k).Delete(k)
 }
 
 func (c *ShardedCacheHash) RegisterCB(newCB func(interface{}, interface{})) {
+	fmt.Println("REGISTER CB ")
 	for i := 0; i < c.shardsLen; i++ {
 		c.shards[i].RegisterCB(newCB)
 	}
 }
 
 func (c *ShardedCacheHash) Lock(k interface{}) {
+	fmt.Println("LOCK ")
 	c.getShard(k).Lock()
 }
 
 func (c *ShardedCacheHash) Unlock(k interface{}) {
+	fmt.Println("UNLOCK ")
 	c.getShard(k).Unlock()
 }
