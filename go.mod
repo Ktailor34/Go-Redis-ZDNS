@@ -7,6 +7,7 @@ require (
 	github.com/go-redis/redis/v7 v7.4.0 // indirect
 	github.com/go-redis/redis/v8 v8.0.0-beta.7
 	github.com/hashicorp/go-version v1.2.0
+	github.com/json-iterator/go v1.1.10
 	github.com/kavu/go_reuseport v1.4.0 // indirect
 	github.com/liip/sheriff v0.0.0-20190308094614-91aa83a45a3d
 	github.com/miekg/dns v1.1.27
@@ -17,3 +18,4 @@ require (
 )
 
 replace github.com/miekg/dns => github.com/zmap/dns v1.1.28-zmap-3
+replace github.com/Ktailor34/Go-Redis-ZDNS/ => github.com/zmap/zdns/ v1.1.28-zmap-3

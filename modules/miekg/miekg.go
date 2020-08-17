@@ -11,6 +11,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	//. "github.com/Ktailor34/Go-Redis-ZDNS/cachedresult"
 	"github.com/miekg/dns"
 	"github.com/zmap/go-iptree/blacklist"
 	"github.com/zmap/zdns"
@@ -156,6 +157,9 @@ func (s *GlobalLookupFactory) MakeRoutineFactory(threadID int) (zdns.RoutineLook
 }
 
 func (s *GlobalLookupFactory) AddCachedAnswer(answer interface{}, depth int, threadID int) {
+
+	fmt.Println("ADDING CACHED ANSWER MIEKG")
+
 	a, ok := answer.(Answer)
 	if !ok {
 		// we can't cache this entry because we have no idea what to name it
@@ -191,11 +195,17 @@ func (s *GlobalLookupFactory) AddCachedAnswer(answer interface{}, depth int, thr
 		ExpiresAt: expiresAt}
 	ca.Answers[a] = ta
 	s.IterativeCache.Add(q, ca)
+
+	fmt.Println("Added cached answer")
+
 	s.VerboseGlobalLog(depth+1, threadID, "Add cached answer ", q, " ", ca)
 	s.IterativeCache.Unlock(q)
 }
 
 func (s *GlobalLookupFactory) GetCachedResult(q Question, isAuthCheck bool, depth int, threadID int) (Result, bool) {
+
+	fmt.Println("Getting Cached Result MIEKG")
+
 	s.VerboseGlobalLog(depth+1, threadID, "Cache request for: ", q.Name, " (", q.Type, ")")
 	var retv Result
 	s.IterativeCache.Lock(q)
@@ -420,6 +430,9 @@ func DoLookupWorker(udp *dns.Client, tcp *dns.Client, q Question, nameServer str
 }
 
 func (s *Lookup) SafeAddCachedAnswer(a interface{}, layer string, debugType string, depth int) {
+
+	fmt.Println("SAFE CACHE MIEKG")
+
 	ans, ok := a.(Answer)
 	if !ok {
 		s.VerboseLog(depth+1, "unable to cast ", debugType, ": ", layer, ": ", a)
@@ -433,6 +446,9 @@ func (s *Lookup) SafeAddCachedAnswer(a interface{}, layer string, debugType stri
 }
 
 func (s *Lookup) cacheUpdate(layer string, result Result, depth int) {
+
+	fmt.Println("CACHEUPDATE MIEKG")
+
 	for _, a := range result.Additional {
 		s.SafeAddCachedAnswer(a, layer, "additional", depth)
 	}
@@ -477,7 +493,7 @@ func (s *Lookup) retryingLookup(q Question, nameServer string, recursive bool) (
 	} else {
 		origTimeout = s.Factory.TCPClient.Timeout
 	}
-	for i := 0; i < s.Factory.Retries + 1; i++ {
+	for i := 0; i < s.Factory.Retries+1; i++ {
 		result, status, err := s.doLookup(q, nameServer, recursive)
 		if (status != zdns.STATUS_TIMEOUT && status != zdns.STATUS_TEMPORARY) || i+1 == s.Factory.Retries {
 			if s.Factory.Client != nil {
@@ -499,6 +515,9 @@ func (s *Lookup) retryingLookup(q Question, nameServer string, recursive bool) (
 }
 
 func (s *Lookup) cachedRetryingLookup(q Question, nameServer, layer string, depth int) (Result, IsCached, zdns.Status, error) {
+
+	fmt.Println("CACHED RETRY LOOKUP MIEKG")
+
 	var isCached IsCached
 	isCached = false
 	s.VerboseLog(depth+1, "Cached retrying lookup. Name: ", q, ", Layer: ", layer, ", Nameserver: ", nameServer)
@@ -774,6 +793,9 @@ func (s *Lookup) iterateOnAuthorities(q Question, depth int, result Result, laye
 func (s *Lookup) iterativeLookup(q Question, nameServer string,
 	depth int, layer string, trace []interface{}) (Result, []interface{}, zdns.Status, error) {
 	//
+
+	fmt.Println("IN INTERATIVE LOOKUP MIEKG")
+
 	if log.GetLevel() == log.DebugLevel {
 		s.VerboseLog((depth), "iterative lookup for ", q.Name, " (", q.Type, ") against ", nameServer, " layer ", layer)
 	}
@@ -824,6 +846,9 @@ func (s *Lookup) iterativeLookup(q Question, nameServer string,
 }
 
 func (s *Lookup) DoMiekgLookup(q Question, nameServer string) (interface{}, zdns.Trace, zdns.Status, error) {
+
+	fmt.Println("IN Do MIEKG LOOKUP")
+
 	if nameServer == "" {
 		nameServer = s.NameServer
 	}
@@ -856,7 +881,10 @@ func (s *Lookup) DoMiekgLookup(q Question, nameServer string) (interface{}, zdns
 }
 
 func (s *Lookup) DoTxtLookup(name string, nameServer string) (string, zdns.Trace, zdns.Status, error) {
-	res, trace, status, err := s.DoMiekgLookup(Question{Name: name, Type:s.DNSType, Class:s.DNSClass}, nameServer)
+
+	fmt.Println("IN MIEKG TXT LOOKUP")
+
+	res, trace, status, err := s.DoMiekgLookup(Question{Name: name, Type: s.DNSType, Class: s.DNSClass}, nameServer)
 	if status != zdns.STATUS_NOERROR {
 		return "", trace, status, err
 	}
@@ -873,5 +901,5 @@ func (s *Lookup) DoTxtLookup(name string, nameServer string) (string, zdns.Trace
 
 // allow miekg to be used as a ZDNS module
 func (s *Lookup) DoLookup(name, nameServer string) (interface{}, zdns.Trace, zdns.Status, error) {
-	return s.DoMiekgLookup(Question{Name:name, Type: s.DNSType, Class: s.DNSClass}, nameServer)
+	return s.DoMiekgLookup(Question{Name: name, Type: s.DNSType, Class: s.DNSClass}, nameServer)
 }

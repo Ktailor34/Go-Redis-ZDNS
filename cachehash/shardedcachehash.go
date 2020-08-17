@@ -48,28 +48,27 @@ func (c *ShardedCacheHash) getShard(k interface{}) *CacheHash {
 }
 
 func (c *ShardedCacheHash) Add(k interface{}, v interface{}) bool {
-	checker := SetCacheValue(k.(string), v.(string))
-	fmt.Println("ADD OPERATION ", checker)
+	fmt.Println("ADD SHARD")
 	return c.getShard(k).Add(k, v)
 }
 
 func (c *ShardedCacheHash) Get(k interface{}) (interface{}, bool) {
-	fmt.Println("GET ")
+	fmt.Println("GET SHARD")
 	return c.getShard(k).Get(k)
 }
 
 func (c *ShardedCacheHash) GetNoMove(k interface{}) (interface{}, bool) {
-	fmt.Println("GET NO MOVE")
+	fmt.Println("GET NO MOVE SHARD")
 	return c.getShard(k).GetNoMove(k)
 }
 
 func (c *ShardedCacheHash) Has(k interface{}) bool {
-	fmt.Println("HAS ")
+	fmt.Println("HAS SHARD")
 	return c.getShard(k).Has(k)
 }
 
 func (c *ShardedCacheHash) Delete(k interface{}) (interface{}, bool) {
-	fmt.Println("DELETE ")
+	fmt.Println("DELETE SHARD")
 	return c.getShard(k).Delete(k)
 }
 
@@ -81,11 +80,11 @@ func (c *ShardedCacheHash) RegisterCB(newCB func(interface{}, interface{})) {
 }
 
 func (c *ShardedCacheHash) Lock(k interface{}) {
-	fmt.Println("LOCK ")
+	fmt.Println("LOCK SHARD")
 	c.getShard(k).Lock()
 }
 
 func (c *ShardedCacheHash) Unlock(k interface{}) {
-	fmt.Println("UNLOCK ")
+	fmt.Println("UNLOCK SHARD")
 	c.getShard(k).Unlock()
 }

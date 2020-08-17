@@ -1,8 +1,10 @@
 package main
 
 import (
+	"container/list"
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/go-redis/redis/v8"
 )
@@ -80,12 +82,12 @@ func DeleteCacheValue(key interface{}) (interface{}, bool) {
 }
 
 type CacheHash struct {
-	// sync.Mutex
-	// h       map[interface{}]*list.Element
-	// l       *list.List
-	// len     int
-	// maxLen  int
-	// ejectCB func(interface{}, interface{})
+	sync.Mutex
+	h       map[interface{}]*list.Element
+	l       *list.List
+	len     int
+	maxLen  int
+	ejectCB func(interface{}, interface{})
 }
 
 type keyValue struct {
@@ -94,12 +96,16 @@ type keyValue struct {
 }
 
 func (c *CacheHash) Init(maxLen int) {
-
+	c.l = list.New()
+	c.l = c.l.Init()
+	c.h = make(map[interface{}]*list.Element)
+	c.len = 0
+	c.maxLen = maxLen
 }
 
 // 4,294,967,295 Max amount of values
 // 512Mb max for each entry
-// Call this if over max values?
+// Call this if over max values...
 func (c *CacheHash) Eject() {
 
 }
